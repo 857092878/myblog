@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rui.myblog.mapper.MessageMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.rui.myblog.pojo.Message">
+        <id column="id" property="id" />
+        <result column="nickname" property="nickname" />
+        <result column="email" property="email" />
+        <result column="content" property="content" />
+        <result column="avatar" property="avatar" />
+        <result column="create_time" property="createTime" />
+        <result column="parent_message_id" property="parentMessageId" />
+        <result column="admin_message" property="adminMessage" />
+        <result column="parent_email" property="parentEmail" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, nickname, email, content, avatar, create_time, parent_message_id, admin_message, parent_email
+    </sql>
+    <!--查询父级留言-->
+    <select id="findByParentId" resultType="com.rui.myblog.pojo.Message">
+        select *
+        from myblog.t_message c
+        where c.parent_message_id = #{ParentId}
+        order by c.create_time desc
+    </select>
+    <select id="getEmailByParentId" resultType="com.rui.myblog.pojo.Message">
+        select *
+        from myblog.t_message c
+        where c.id = #{parentId}
+        order by c.create_time desc
+    </select>
+<!--    //保存留言-->
+<!--    int saveMessage(Message message);-->
+    <!--添加留言-->
+    <insert id="saveMessage" parameterType="com.rui.myblog.pojo.Message">
+        insert ignore  into myblog.t_message (nickname,email,content,avatar,create_time,parent_message_id,admin_message,parent_email)
+        values (#{nickname},#{email},#{content},#{avatar},#{createTime},#{parentMessageId},#{adminMessage},#{parentEmail});
+    </insert>
+
+
+</mapper>

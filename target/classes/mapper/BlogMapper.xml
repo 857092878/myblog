@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rui.myblog.mapper.BlogMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.rui.myblog.pojo.Blog">
+        <id column="id" property="id" />
+        <result column="appreciation" property="appreciation" />
+        <result column="commentabled" property="commentabled" />
+        <result column="content" property="content" />
+        <result column="create_time" property="createTime" />
+        <result column="first_picture" property="firstPicture" />
+        <result column="flag" property="flag" />
+        <result column="published" property="published" />
+        <result column="recommend" property="recommend" />
+        <result column="share_statement" property="shareStatement" />
+        <result column="title" property="title" />
+        <result column="update_time" property="updateTime" />
+        <result column="views" property="views" />
+        <result column="type_id" property="typeId" />
+        <result column="user_id" property="userId" />
+        <result column="description" property="description" />
+        <result column="comment_count" property="commentCount" />
+    </resultMap>
+
+    <resultMap id="detailedBlogMessageMap" type="com.rui.myblog.dto.BlogDetailMessageDto">
+        <id property="id" column="bid"/>
+        <result property="firstPicture" column="first_picture"/>
+        <result property="flag" column="flag"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="typeName" column="name"/>
+        <result property="views" column="views"/>
+        <result property="commentCount" column="comment_count"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="commentabled" column="commentabled"/>
+        <result property="shareStatement" column="share_statement"/>
+        <result property="appreciation" column="appreciation"/>
+        <result property="nickname" column="nickname"/>
+        <result property="avatar" column="avatar"/>
+    </resultMap>
+    <!--查询首页最新博客列表信息-->
+    <resultMap id="BlogAllDto" type="com.rui.myblog.dto.BlogAllDto">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="firstPicture" column="first_picture"/>
+        <result property="views" column="views"/>
+        <result property="commentCount" column="comment_count"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="description" column="description"/>
+        <result property="typeName" column="name"/>
+        <result property="nickname" column="nickname"/>
+        <result property="avatar" column="avatar"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, appreciation, commentabled, content, create_time, first_picture, flag, published, recommend, share_statement, title, update_time, views, type_id, user_id, description, comment_count
+    </sql>
+
+<!--    //统计访问总数-->
+<!--    Integer selectViewCount();-->
+    <select id="selectViewCount" resultType="Integer">
+        select coalesce(sum(views),0) from myblog.t_blog
+    </select>
+
+<!--    //查询blog,user,type连接的博客详细信息-->
+<!--    BlogDetailMessageDto selectDetailedBlogMessage(Long id);-->
+    <select id="selectDetailedBlogMessage" resultMap="detailedBlogMessageMap">
+        select b.id bid,b.first_picture,b.flag,b.title,b.content,b.views,b.comment_count,b.update_time,b.commentabled,b.share_statement,b.appreciation, u.nickname,u.avatar,t.name
+        from myblog.t_blog b
+            join myblog.t_user u
+            join myblog.t_type t
+            on b.user_id = u.id
+            and b.type_id = t.id
+            and b.id = #{id}
+    </select>
+    <!--根据TypeId查询博客列表，显示在分类页面-->
+    <select id="getByTypeId" resultMap="BlogAllDto">
+        select b.id,b.title,b.first_picture, b.views, b.comment_count, b.update_time, b.description,t.name ,u.nickname, u.avatar
+        from myblog.t_blog b, myblog.t_type t,myblog.t_user u
+        where b.type_id = t.id and u.id = b.user_id and b.type_id = #{typeId} order by b.update_time desc
+    </select>
+
+<!--    //增加浏览次数-->
+<!--    int updateAddViews(Long id);-->
+    <update id="updateAddViews" parameterType="com.rui.myblog.pojo.Blog">
+        update myblog.t_blog a set a.views = a.views+1 where a.id = #{id}
+    </update>
+
+<!--    //查询评论数量并更新-->
+<!--    int getCommentCountById(Long id-->
+    <update id="getCommentCountById" parameterType="com.rui.myblog.pojo.Blog">
+        update myblog.t_blog b set b.comment_count = (
+            select count(*) from myblog.t_comment c where c.blog_id = #{id} and b.id = #{id}
+        ) WHERE b.id = #{id}
+    </update>
+
+    <resultMap id="BlogQueryDto" type="com.rui.myblog.dto.BlogQueryDto">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="recommend" column="recommend"/>
+        <result property="published" column="published"/>
+        <result property="typeId" column="type_id"/>
+        <association property="typeDto" javaType="com.rui.myblog.dto.TypeDto">
+            <id property="id" column="id"/>
+            <result property="name" column="name"/>
+        </association>
+    </resultMap>
+
+    <!--查询文章管理列表-->
+    <select id="getAllBlogQuery" resultMap="BlogQueryDto">
+        select b.id,b.title,b.create_time,b.update_time,b.recommend,b.published,b.type_id,t.id,t.name
+        from myblog.t_blog b
+                 left outer join myblog.t_type t on b.type_id = t.id
+        order by b.create_time desc
+    </select>
+
+    <!--搜索博客管理列表-->
+    <select id="getBlogBySearch" parameterType="com.rui.myblog.dto.BlogQueryDto" resultMap="BlogQueryDto">
+        <bind name="pattern" value="'%' + title + '%'" />
+        select b.id,b.title,b.type_id,t.id,t.name from myblog.t_blog b ,myblog.t_type t
+        <where>
+            <if test="1 == 1">
+                b.type_id = t.id
+            </if>
+            <if test="typeId != null">
+                and b.type_id = #{typeId}
+            </if>
+            <if test="title != null">
+                and b.title like #{pattern}
+            </if>
+        </where>
+    </select>
+    <!--查询首页最新博客列表信息-->
+    <resultMap id="firstPageBlog" type="com.rui.myblog.dto.BlogAllDto">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="firstPicture" column="first_picture"/>
+        <result property="views" column="views"/>
+        <result property="commentCount" column="comment_count"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="description" column="description"/>
+        <result property="typeName" column="name"/>
+        <result property="nickname" column="nickname"/>
+        <result property="avatar" column="avatar"/>
+    </resultMap>
+    <select id="getFirstPageBlog" resultMap="firstPageBlog">
+        select b.id,b.title,b.first_picture, b.views, b.comment_count,b.create_time,b.update_time,b.description,t.name ,u.nickname, u.avatar
+        from myblog.t_blog b, myblog.t_type t,myblog.t_user u
+        where b.type_id = t.id and  u.id = b.user_id and b.published = 1 order by b.create_time desc
+    </select>
+    <!--查询推荐文章-->
+    <select id="getAllRecommendBlog" resultType="com.rui.myblog.dto.NewRecommenededBlogDto">
+        SELECT
+            *
+        FROM
+            myblog.t_blog
+        WHERE
+            t_blog.recommend = TRUE
+        ORDER BY
+            t_blog.create_time DESC LIMIT 4
+    </select>
+
+
+</mapper>

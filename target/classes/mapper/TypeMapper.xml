@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rui.myblog.mapper.TypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.rui.myblog.pojo.Type">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+    </resultMap>
+
+    <resultMap id="typeDto" type="com.rui.myblog.dto.TypeDto">
+        <id property="id" column="tid"/>
+        <result property="name" column="name"/>
+        <collection property="blogs" ofType="com.rui.myblog.pojo.Blog">
+            <id property="id" column="bid"/>
+            <result property="title" column="title"/>
+            <result property="typeId" column="type_id"/>
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name
+    </sql>
+
+    <!--查询所有分类-->
+    <select id="getAllTypeAndBlog" resultMap="typeDto">
+        select t.id tid, t.name, b.id bid, b.title,b.type_id
+        from myblog.t_type t,myblog.t_blog b
+        where t.id = b.type_id
+    </select>
+
+</mapper>

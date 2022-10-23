@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rui.myblog.mapper.CommentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.rui.myblog.pojo.Comment">
+        <id column="id" property="id" />
+        <result column="nickname" property="nickname" />
+        <result column="email" property="email" />
+        <result column="content" property="content" />
+        <result column="avatar" property="avatar" />
+        <result column="create_time" property="createTime" />
+        <result column="blog_id" property="blogId" />
+        <result column="parent_comment_id" property="parentCommentId" />
+        <result column="admin_comment" property="adminComment" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, nickname, email, content, avatar, create_time, blog_id, parent_comment_id, admin_comment
+    </sql>
+
+    <!--查询父级评论-->
+    <select id="findByBlogIdParentId" resultType="com.rui.myblog.pojo.Comment">
+        select *
+        from myblog.t_comment c
+        where c.blog_id = #{blogId} and c.parent_comment_id = #{blogParentId}
+        order by c.create_time desc
+    </select>
+
+    <!--添加评论-->
+    <insert id="saveComment" parameterType="com.rui.myblog.pojo.Comment">
+        insert into myblog.t_comment (nickname,email,content,avatar,create_time,blog_id,parent_comment_id,admin_comment)
+        values (#{nickname},#{email},#{content},#{avatar},#{createTime},#{blogId},#{parentCommentId},#{adminComment});
+    </insert>
+
+    <!--    根据父评论id查询留言信息-->
+    <select id="getEmailByParentId" resultType="com.rui.myblog.pojo.Comment">
+        select *
+        from myblog.t_comment c
+        where c.id = #{parentId}
+        order by c.create_time desc
+    </select>
+</mapper>
