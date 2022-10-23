@@ -45,7 +45,6 @@ springboot,thymeleaf,swagger,mybatis-plus,redis,mysql,JavaMailSender
 ![image](https://github.com/857092878/myblog/blob/master/QQ%E5%9B%BE%E7%89%8720220926121354.png)
 
 ![image](https://github.com/857092878/myblog/blob/master/QQ%E5%9B%BE%E7%89%8720220925153040.png)
-代码地址：https://github.com/857092878/blog/tree/master
 
 修改一个小bug
 管理员在每次修改博客内容是修改前的内容不显示于是
