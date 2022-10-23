@@ -211,16 +211,19 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
         LambdaQueryWrapper<Blog> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Blog::getFirstPicture,fileName);
         Blog blog = blogMapper.selectOne(queryWrapper);
-
-
-
         if (blog != null){
             return 0;
         }
-        File del = new File(file + blog.getFirstPicture());
-        if (del.exists()){
-            del.delete();
+        try{
+            File del = new File(file + blog.getFirstPicture());
+            if (del.exists()){
+                del.delete();
+            }
+        }catch (Exception e){
+            System.out.println("没有图片");
         }
+
+
         Blog blog1 = new Blog();
         blog1.setTitle(title);
         blog1.setContent(content);
@@ -274,15 +277,20 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IB
 //            saveBlog(blogDto);
         }
 
-        File dest = new File(filePath + fileName);
-        if (!dest.getParentFile().exists()) {
-            dest.getParentFile().mkdirs();
+        try{
+            File dest = new File(filePath + fileName);
+            if (!dest.getParentFile().exists()) {
+                dest.getParentFile().mkdirs();
+            }
+            try {
+                file.transferTo(dest);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }catch (Exception e){
+            System.out.println(e);
         }
-        try {
-            file.transferTo(dest);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         return 1;
     }
 

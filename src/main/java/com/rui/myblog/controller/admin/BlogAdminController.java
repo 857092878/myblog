@@ -107,27 +107,7 @@ public class BlogAdminController {
         model.addAttribute("pageInfo", pageInfo);
         return "admin/blogs :: blogList";
     }
-//    //博客新增
-//    @PostMapping("/blogs")
-//    public String post(BlogDto blogDto, RedirectAttributes attributes, HttpSession session){
-//        //新增的时候需要传递blog对象，blog对象需要有user
-//        blogDto.setUser((User) session.getAttribute("user"));
-//        //设置blog的type
-//        blogDto.setType(typeService.getType(blogDto.getType().getId()));
-//        //设置blog中typeId属性
-//        blogDto.setTypeId(blogDto.getType().getId());
-//        //设置用户id
-//        blogDto.setUserId(blogDto.getUser().getId());
-//
-//        int b = blogService.saveBlog(blogDto);
-//        if(b == 0){
-//            attributes.addFlashAttribute("message", "新增失败");
-//        }else {
-//            attributes.addFlashAttribute("message", "新增成功");
-//            blogRemplate.BlogDelete();
-//        }
-//        return "redirect:/admin/blogs";
-//    }
+
 
     @RequestMapping("/blogs/upload")
     public String blogPost(@RequestParam(value = "file") MultipartFile file,
@@ -174,18 +154,22 @@ public class BlogAdminController {
         String suffixName = fileName.substring(fileName.lastIndexOf("."));  // 后缀名
         String filePath = files; // 上传后的路径
         fileName = UUID.randomUUID() + suffixName; // 新文件名
-
-        File dest = new File(filePath + fileName);
-        if (!dest.getParentFile().exists()) {
-            dest.getParentFile().mkdirs();
-        }
         try {
-            file.transferTo(dest);
-        } catch (IOException e) {
-            e.printStackTrace();
+            File dest = new File(filePath + fileName);
+            if (!dest.getParentFile().exists()) {
+                dest.getParentFile().mkdirs();
+            }
+            try {
+                file.transferTo(dest);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }catch (Exception e){
+            System.out.println(e);
         }
 
-        return"<h2>" + "图片地址为："+ "http" + "端口号:8088" + fileName + "</h2>";
+
+        return"<h2>" + "图片地址为："+ "http" + "端口号:888" + fileName + "</h2>";
     }
 
 }

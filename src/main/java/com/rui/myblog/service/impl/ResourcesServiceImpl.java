@@ -144,10 +144,15 @@ public class ResourcesServiceImpl extends ServiceImpl<ResourcesMapper, Resources
         if (resources != null){
             return 0;
         }
-        File del = new File(file + resources.getPictureAddress());
-        if (del.exists()){
-            del.delete();
+        try{
+            File del = new File(file + resourcesMapper.selectById(id).getPictureAddress());
+            if (del.exists()){
+                del.delete();
+            }
+        }catch (Exception e){
+            System.out.println(e);
         }
+
         Resources resources1 = new Resources();
         resources1.setFirstType("学习资源");
         resources1.setSecondType("学习资源");

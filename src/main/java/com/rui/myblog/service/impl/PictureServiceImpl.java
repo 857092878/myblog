@@ -80,10 +80,15 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture> impl
         if (picture != null){
             return 0;
         }
-        File del = new File(file + picture.getPictureaddress());
-        if (del.exists()){
-            del.delete();
+        try{
+            File del = new File(file + pictureMapper.selectById(id).getPictureaddress());
+            if (del.exists()){
+                del.delete();
+            }
+        }catch (Exception e){
+            System.out.println(e);
         }
+
         Picture picture1 = new Picture();
         picture1.setPictureaddress(fileName);
         picture1.setPicturename(picturename);

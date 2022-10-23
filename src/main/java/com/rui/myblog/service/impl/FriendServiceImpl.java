@@ -107,16 +107,30 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
             friendMapper.updateById(friend1);
         }
 
+        try{
+            String oldpictureaddress = friendMapper.selectById(id).getPictureaddress();
+            File del = new File(files + oldpictureaddress);
+            if (del.exists()){
+                del.delete();
+            }
+        }catch (Exception e){
+            System.out.println(e);
+        }
 
-        File dest = new File(filePath + fileName);
-        if (!dest.getParentFile().exists()) {
-            dest.getParentFile().mkdirs();
+        try{
+            File dest = new File(filePath + fileName);
+            if (!dest.getParentFile().exists()) {
+                dest.getParentFile().mkdirs();
+            }
+            try {
+                file.transferTo(dest);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }catch (Exception e){
+            System.out.println(e);
         }
-        try {
-            file.transferTo(dest);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         return 1;
     }
 }

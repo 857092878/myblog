@@ -106,6 +106,17 @@ public class MemoryServiceImpl extends ServiceImpl<MemoryMapper, Memory> impleme
         }
         memoryMapper.insert(memory2);
 
+
+        try{
+            String pictureAddress = memoryMapper.selectById(id).getPictureAddress();
+            File dest = new File(filePath + pictureAddress);
+            if (!dest.getParentFile().exists()) {
+                dest.getParentFile().mkdirs();
+            }
+        }catch (Exception e){
+            System.out.println(e);
+        }
+
         File dest = new File(filePath + fileName);
         if (!dest.getParentFile().exists()) {
             dest.getParentFile().mkdirs();
