@@ -5,6 +5,7 @@ springboot,thymeleaf,swagger,mybatis-plus,redis,mysql,JavaMailSender
 
 项目演示：
 项目简介：该项目用于记录个人博客，笔记，生活照片分享，及资源分享。整个项目分为了前台和后台。
+项目位置：www.purui.online
 
 前台： 
 首页：最新博客，推荐博客，博客搜索，博客留言及回复功能
@@ -51,3 +52,4 @@ springboot,thymeleaf,swagger,mybatis-plus,redis,mysql,JavaMailSender
 在blog-input.html中的form表单里,所有表单要提交的字段中th:value内容修改为  th:text="${blog.getDescription()}"这种形式的字段
 
 我的csdn：https://blog.csdn.net/weixin_57730366?type=blog
+项目位置：www.purui.online
